@@ -11,33 +11,72 @@ type to fit the data.
 4. Store the results in an array
 5. Represent the result in graphical representation as given below.
 ### PROGRAM:
-import matplotlib.pyplot as plt
+```
 
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
-data = [3, 16, 156, 47, 246, 176, 233, 140, 130,
-101, 166, 201, 200, 116, 118, 247,
-209, 52, 153, 232, 128, 27, 192, 168, 208,
-187, 228, 86, 30, 151, 18, 254,
-76, 112, 67, 244, 179, 150, 89, 49, 83, 147, 90,
-33, 6, 158, 80, 35, 186, 127]
+# Read the Nile dataset
+df = pd.read_csv('Nile.csv')
 
-lags = range(35)
+# Extract the data column (excluding Year)
+data = df.select_dtypes(include=np.number).iloc[:, -1].values
 
+# Find the length of data
+N = len(data)
 
-#Pre-allocate autocorrelation table
+# Define lags
+lags = range(50)
 
-#Mean
+# Pre-allocate autocorrelation table
+autocorr_values = np.zeros(50)
 
-#Variance
+# Calculate mean and variance
+mean_data = np.mean(data)
+variance_data = np.var(data)
 
-#Normalized data
+print("Mean of the data:", mean_data)
+print("Variance of the data:", variance_data)
 
-#Go through lag components one-by-one
+# Normalize the data
+normalized_data = (data - mean_data) / np.sqrt(variance_data)
 
-#display the graph
+print("Normalized data:")
+print(normalized_data)
+
+# Calculate autocorrelation
+for lag in lags:
+    if lag == 0:
+        autocorr_values[lag] = 1
+    else:
+        autocorr_values[lag] = np.sum(
+            normalized_data[:-lag] * normalized_data[lag:]
+        ) / N
+
+# Display autocorrelation values
+print("\nAutocorrelation values:")
+print(autocorr_values)
+
+# Plot the ACF graph
+plt.figure(figsize=(10, 6))
+plt.stem(lags, autocorr_values)
+
+plt.title('Autocorrelation Function (ACF) - Nile Dataset')
+plt.xlabel('Lag')
+plt.ylabel('Autocorrelation')
+plt.grid(True)
+
+plt.show()
+
+```
 
 ### OUTPUT:
 
+<img width="557" height="562" alt="image" src="https://github.com/user-attachments/assets/6ef60483-f40c-4fd0-9cf2-7b1b97c45959" />
+<img width="771" height="452" alt="image" src="https://github.com/user-attachments/assets/2881ca58-e0f3-4c00-a691-73275baed4ee" />
+
+
 ### RESULT:
-        Thus we have successfully implemented the auto correlation function in python.
+
+Thus we have successfully implemented the auto correlation function in python.
